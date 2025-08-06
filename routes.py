@@ -1,8 +1,10 @@
 from flask import render_template, request, redirect, url_for, flash, send_file
 from app import app, db
 from models import Student, Subject, Grade
-from forms import StudentForm, SubjectForm, GradeForm
+from forms import StudentForm, SubjectForm, GradeForm, ExcelUploadForm
 from pdf_generator import generate_bulletin_pdf
+import pandas as pd
+import os
 import io
 
 @app.route('/')
@@ -248,3 +250,134 @@ def create_default_subjects():
     except Exception as e:
         db.session.rollback()
         print(f"Error creating default subjects: {e}")
+
+@app.route('/students/import', methods=['GET', 'POST'])
+def import_students():
+    """Import students from Excel file"""
+    form = ExcelUploadForm()
+    
+    if form.validate_on_submit():
+        try:
+            # Read the Excel file using pandas
+            excel_file = form.excel_file.data
+            df = pd.read_excel(excel_file)
+            
+            # Expected columns: Nome, Matrícula (or similar)
+            # Try to identify the correct columns
+            name_columns = ['Nome', 'nome', 'Name', 'name', 'NOME']
+            registration_columns = ['Matrícula', 'matricula', 'Matricula', 'Registration', 'MATRÍCULA', 'Numero', 'Número']
+            
+            name_col = None
+            registration_col = None
+            
+            # Find the correct column names
+            for col in df.columns:
+                if col in name_columns:
+                    name_col = col
+                if col in registration_columns:
+                    registration_col = col
+            
+            if not name_col or not registration_col:
+                flash('Planilha deve conter colunas "Nome" e "Matrícula"', 'error')
+                return render_template('import_students.html', form=form)
+            
+            imported_count = 0
+            skipped_count = 0
+            errors = []
+            
+            # Process each row
+            for index, row in df.iterrows():
+                try:
+                    name = str(row[name_col]).strip()
+                    registration = str(row[registration_col]).strip()
+                    
+                    # Skip empty rows
+                    if pd.isna(row[name_col]) or pd.isna(row[registration_col]) or not name or not registration or name == 'nan' or registration == 'nan':
+                        continue
+                    
+                    # Check if student already exists
+                    existing = Student.query.filter_by(registration_number=registration).first()
+                    if existing:
+                        skipped_count += 1
+                        continue
+                    
+                    # Create new student
+                    student = Student()
+                    student.name = name
+                    student.registration_number = registration
+                    student.course = form.course.data
+                    student.email = None
+                    student.phone = None
+                    
+                    db.session.add(student)
+                    imported_count += 1
+                    
+                except Exception as e:
+                    errors.append(f"Linha {int(index) + 2}: {str(e)}")
+                    continue
+            
+            # Commit all changes
+            try:
+                db.session.commit()
+                
+                # Show results
+                message = f"Importação concluída! {imported_count} alunos importados"
+                if skipped_count > 0:
+                    message += f", {skipped_count} já existiam"
+                if errors:
+                    message += f". {len(errors)} erros encontrados."
+                    for error in errors[:5]:  # Show only first 5 errors
+                        flash(error, 'warning')
+                
+                flash(message, 'success')
+                return redirect(url_for('students'))
+                
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erro ao salvar no banco de dados: {str(e)}', 'error')
+                
+        except Exception as e:
+            flash(f'Erro ao ler arquivo Excel: {str(e)}', 'error')
+    
+    return render_template('import_students.html', form=form)
+
+@app.route('/students/sample-excel')
+def download_sample_excel():
+    """Download a sample Excel file for student import"""
+    try:
+        # Create a sample DataFrame
+        sample_data = {
+            'Nome': [
+                'João Silva Santos', 
+                'Maria Oliveira Costa', 
+                'Pedro Almeida Souza',
+                'Ana Carolina Lima',
+                'Carlos Eduardo Silva'
+            ],
+            'Matrícula': [
+                '2024001',
+                '2024002', 
+                '2024003',
+                '2024004',
+                '2024005'
+            ]
+        }
+        
+        df = pd.DataFrame(sample_data)
+        
+        # Create Excel file in memory
+        output = io.BytesIO()
+        df.to_excel(output, engine='openpyxl', index=False, sheet_name='Alunos')
+        
+        output.seek(0)
+        
+        return send_file(
+            output,
+            as_attachment=True,
+            download_name='modelo_importacao_alunos.xlsx',
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        
+    except Exception as e:
+        flash(f'Erro ao gerar arquivo modelo: {str(e)}', 'error')
+        return redirect(url_for('import_students'))

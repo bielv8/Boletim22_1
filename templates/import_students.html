@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Importar Alunos - Sistema de Boletins SENAI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-senai mb-1">
+                        <i class="fas fa-file-excel"></i> Importar Alunos via Excel
+                    </h2>
+                    <p class="text-muted">Importe uma lista de alunos em massa através de planilha Excel</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('students') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+
+            <!-- Instructions Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle text-primary"></i> Instruções para Importação
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-senai">Formato da Planilha:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> Arquivo .xls ou .xlsx</li>
+                                <li><i class="fas fa-check text-success"></i> Deve conter coluna "Nome" com o nome completo</li>
+                                <li><i class="fas fa-check text-success"></i> Deve conter coluna "Matrícula" com o número da matrícula</li>
+                                <li><i class="fas fa-check text-success"></i> Primeira linha deve conter os cabeçalhos</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-senai">Exemplo de Estrutura:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Matrícula</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>João Silva Santos</td>
+                                            <td>2023001</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Maria Oliveira Costa</td>
+                                            <td>2023002</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Importante:</strong> Alunos com matrículas já cadastradas serão ignorados. 
+                        Campos como email e telefone ficam em branco e podem ser preenchidos posteriormente.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload"></i> Upload da Planilha
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                {{ form.excel_file.label(class="form-label") }}
+                                {{ form.excel_file(class="form-control" + (" is-invalid" if form.excel_file.errors else ""), accept=".xls,.xlsx") }}
+                                {% if form.excel_file.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.excel_file.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Selecione o arquivo Excel (.xls ou .xlsx) com a lista de alunos</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.course.label(class="form-label") }}
+                                {{ form.course(class="form-control" + (" is-invalid" if form.course.errors else "")) }}
+                                {% if form.course.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.course.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Curso será aplicado a todos os alunos importados</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                <i class="fas fa-clock"></i> 
+                                O processo pode levar alguns segundos dependendo do tamanho da planilha
+                            </div>
+                            <div>
+                                {{ form.submit(class="btn btn-senai btn-lg") }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sample Download -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h6 class="text-senai">Precisa de um modelo?</h6>
+                    <p class="text-muted mb-3">Baixe uma planilha modelo para facilitar a importação dos seus alunos</p>
+                    <a href="{{ url_for('download_sample_excel') }}" class="btn btn-outline-senai">
+                        <i class="fas fa-download"></i> Baixar Planilha Modelo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, FloatField, IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, Optional, NumberRange, Length
 from models import Student, Subject
@@ -32,3 +33,12 @@ class GradeForm(FlaskForm):
         super(GradeForm, self).__init__(*args, **kwargs)
         self.student_id.choices = [(s.id, s.name) for s in Student.query.order_by(Student.name).all()]
         self.subject_id.choices = [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
+
+class ExcelUploadForm(FlaskForm):
+    excel_file = FileField('Planilha Excel', validators=[
+        FileRequired('Selecione um arquivo'),
+        FileAllowed(['xls', 'xlsx'], 'Apenas arquivos Excel (.xls, .xlsx) são permitidos')
+    ])
+    course = StringField('Curso', validators=[DataRequired(), Length(max=100)], 
+                        default="Técnico em Desenvolvimento de Sistemas")
+    submit = SubmitField('Importar Alunos')
