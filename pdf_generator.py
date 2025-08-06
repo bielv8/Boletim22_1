@@ -95,11 +95,24 @@ def generate_bulletin_pdf(student, grades):
     )
     
     # Create three-column layout: Logo | Center Content | Date
-    # Logo with stylized SENAI blocks similar to the image (left)
-    logo_content = Paragraph(
-        '<font size="14"><b>███ SENAI ███</b></font>',
-        logo_style
-    )
+    # Real SENAI logo (left)
+    try:
+        logo_path = os.path.join('static', 'images', 'logo-senai.png')
+        if os.path.exists(logo_path):
+            logo_img = Image(logo_path, width=3*cm, height=0.8*cm)
+            logo_content = logo_img
+        else:
+            # Fallback to text logo if image not found
+            logo_content = Paragraph(
+                '<font size="14"><b>███ SENAI ███</b></font>',
+                logo_style
+            )
+    except Exception:
+        # Fallback to text logo if there's any error
+        logo_content = Paragraph(
+            '<font size="14"><b>███ SENAI ███</b></font>',
+            logo_style
+        )
     
     # Center content with proper spacing and hierarchy
     center_content = Paragraph(
@@ -118,19 +131,29 @@ def generate_bulletin_pdf(student, grades):
         date_style
     )
     
-    # Create header table with balanced three columns
+    # Create header table with balanced three columns optimized for logo
     header_data = [[logo_content, center_content, date_content]]
-    header_table = Table(header_data, colWidths=[4.5*cm, 8*cm, 4.5*cm])
+    header_table = Table(header_data, colWidths=[4*cm, 9*cm, 4*cm])
+    
+    # Determine if we're using image or text logo for styling
+    logo_valign = 'MIDDLE'
+    logo_padding = 15
+    if isinstance(logo_content, Image):
+        logo_valign = 'MIDDLE'
+        logo_padding = 20
+    
     header_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF0000')),
-        ('ALIGN', (0, 0), (0, 0), 'CENTER'),   # Logo centered in its cell
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),     # Logo left aligned in its cell
         ('ALIGN', (1, 0), (1, 0), 'CENTER'),   # Center content centered
-        ('ALIGN', (2, 0), (2, 0), 'CENTER'),   # Date centered in its cell
+        ('ALIGN', (2, 0), (2, 0), 'RIGHT'),    # Date right aligned in its cell
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('TOPPADDING', (0, 0), (-1, -1), 22),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 22),
-        ('LEFTPADDING', (0, 0), (-1, -1), 15),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 15),
+        ('TOPPADDING', (0, 0), (-1, -1), 25),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 25),
+        ('LEFTPADDING', (0, 0), (0, 0), logo_padding),    # Logo padding
+        ('LEFTPADDING', (1, 0), (1, 0), 15),              # Center padding
+        ('LEFTPADDING', (2, 0), (2, 0), 15),              # Date padding
+        ('RIGHTPADDING', (0, 0), (-1, -1), 20),
     ]))
     
     content.append(header_table)
