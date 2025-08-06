@@ -2,6 +2,13 @@
 
 This is a Student Bulletin Management System (Sistema de Boletins SENAI) built for SENAI (Serviço Nacional de Aprendizagem Industrial), a Brazilian technical education institution. The application manages student records, subjects, grades, and generates academic bulletins with PDF export functionality. It provides a complete academic administration interface for technical course management, specifically defaulting to "Técnico em Desenvolvimento de Sistemas" (Technical Systems Development) course.
 
+## Recent Changes (August 2025)
+- Implemented automatic final grade calculation as average of 3 partial grades
+- Added teacher name field to subjects with optional input
+- Updated approval criteria: ≥50 points final grade AND ≤25% absences of course workload
+- Enhanced PDF layout with professional SENAI header design and color-coded status
+- Added bulk student import functionality via Excel files with sample template download
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -31,7 +38,8 @@ Preferred communication style: Simple, everyday language.
 ## PDF Generation
 - **Library**: ReportLab for PDF creation
 - **Features**: Academic bulletin generation with SENAI branding, student information, and grade tables
-- **Output**: In-memory PDF generation with download capability
+- **Design**: Professional layout with red SENAI header banner, clean student info table, and status color coding
+- **Output**: In-memory PDF generation with download capability, filename includes student name
 
 ## Application Structure
 - **Separation of Concerns**: Distinct modules for models, routes, forms, and PDF generation
@@ -51,8 +59,9 @@ Preferred communication style: Simple, everyday language.
 ## Python Packages
 - **Flask**: Core web framework
 - **Flask-SQLAlchemy**: Database ORM integration
-- **WTForms/Flask-WTF**: Form handling and validation
+- **WTForms/Flask-WTF**: Form handling and validation including file uploads
 - **ReportLab**: PDF generation for academic bulletins
+- **Pandas/OpenPyXL**: Excel file processing for bulk student import
 - **Werkzeug**: WSGI utilities and middleware (ProxyFix)
 
 ## Development Environment

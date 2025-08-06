@@ -53,70 +53,106 @@ def generate_bulletin_pdf(student, grades):
     # Build content
     content = []
     
-    # Header with improved layout - logo on left, info centered
-    header_data = [
-        [
-            # Logo placeholder (left)
-            Paragraph(
-                '<b><font color="white" backColor="#FF0000" size="14">&nbsp;SENAI&nbsp;</font></b><br/>'
-                '<font size="8">Serviço Nacional de<br/>Aprendizagem Industrial</font>',
-                normal_style
-            ),
-            # Center content
-            Paragraph(
-                '<b>BOLETIM ESCOLAR</b><br/>'
-                'SENAI Morvan Figueiredo<br/>'
-                '<font size="8">Sistema de Avaliação Acadêmica</font>',
-                title_style
-            ),
-            # Date (right)
-            Paragraph(
-                f'<font size="10"><b>Data:</b><br/>{datetime.now().strftime("%d/%m/%Y")}</font>',
-                normal_style
-            )
-        ]
-    ]
+    # Red header banner like in the image
+    header_style_white = ParagraphStyle(
+        'HeaderWhite',
+        parent=styles['Normal'],
+        fontSize=14,
+        fontName='Helvetica-Bold',
+        textColor=colors.white,
+        alignment=1  # Center
+    )
     
-    header_table = Table(header_data, colWidths=[5*cm, 9*cm, 3*cm])
+    header_style_white_small = ParagraphStyle(
+        'HeaderWhiteSmall',
+        parent=styles['Normal'],
+        fontSize=10,
+        fontName='Helvetica',
+        textColor=colors.white,
+        alignment=1  # Center
+    )
+    
+    # Create SENAI logo text with horizontal lines (similar to image)
+    logo_text = Paragraph(
+        '<font size="16"><b>═══ SENAI ═══</b></font><br/>'
+        '<font size="10">Serviço Nacional de Aprendizagem<br/>Industrial</font><br/>'
+        '<font size="14"><b>BOLETIM ESCOLAR</b></font><br/>'
+        '<font size="12">SENAI Morvan Figueiredo</font>',
+        header_style_white
+    )
+    
+    # Date in top right
+    date_text = Paragraph(
+        f'<font size="12">{datetime.now().strftime("%d/%m/%Y")}</font>',
+        header_style_white
+    )
+    
+    # Red header table
+    header_data = [[logo_text, date_text]]
+    header_table = Table(header_data, colWidths=[14*cm, 3*cm])
     header_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (0, 0), 'LEFT'),    # Logo left
-        ('ALIGN', (1, 0), (1, 0), 'CENTER'),  # Title center
-        ('ALIGN', (2, 0), (2, 0), 'RIGHT'),   # Date right
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF0000')),
+        ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BOX', (0, 0), (-1, -1), 2, colors.HexColor('#FF0000')),
-        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#FF0000')),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-        ('TOPPADDING', (0, 0), (-1, -1), 12),
+        ('TOPPADDING', (0, 0), (-1, -1), 15),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
+        ('LEFTPADDING', (0, 0), (-1, -1), 20),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 20),
     ]))
     
     content.append(header_table)
-    content.append(Spacer(1, 20))
+    content.append(Spacer(1, 25))
     
-    # Student information
+    # Student information in clean table format like the image
+    student_info_style = ParagraphStyle(
+        'StudentInfo',
+        parent=styles['Normal'],
+        fontSize=11,
+        fontName='Helvetica',
+        leftIndent=10,
+        rightIndent=10
+    )
+    
+    student_label_style = ParagraphStyle(
+        'StudentLabel',
+        parent=styles['Normal'],
+        fontSize=11,
+        fontName='Helvetica-Bold',
+        leftIndent=10,
+        rightIndent=10
+    )
+    
     student_info = [
-        ['<b>Nome do Aluno:</b>', student.name],
-        ['<b>Matrícula:</b>', student.registration_number],
-        ['<b>Curso:</b>', student.course],
-        ['<b>Data de Emissão:</b>', datetime.now().strftime('%d/%m/%Y')]
+        [Paragraph('<b>Nome do Aluno:</b>', student_label_style), Paragraph(student.name, student_info_style)],
+        [Paragraph('<b>Matrícula:</b>', student_label_style), Paragraph(student.registration_number, student_info_style)],
+        [Paragraph('<b>Curso:</b>', student_label_style), Paragraph(student.course, student_info_style)],
+        [Paragraph('<b>Data de Emissão:</b>', student_label_style), Paragraph(datetime.now().strftime('%d/%m/%Y'), student_info_style)]
     ]
     
-    student_table = Table(student_info, colWidths=[2*inch, 4*inch])
+    student_table = Table(student_info, colWidths=[4.5*cm, 12.5*cm])
     student_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
-        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
         ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#CCCCCC')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#F8F8F8')),
     ]))
     
     content.append(student_table)
-    content.append(Spacer(1, 20))
+    content.append(Spacer(1, 25))
     
-    # Grades table
-    content.append(Paragraph('<b>NOTAS E FREQUÊNCIA</b>', header_style))
-    content.append(Spacer(1, 10))
+    # Section title with red icon like in the image
+    section_title_style = ParagraphStyle(
+        'SectionTitle',
+        parent=styles['Normal'],
+        fontSize=14,
+        fontName='Helvetica-Bold',
+        textColor=colors.HexColor('#FF0000'),
+        spaceAfter=15
+    )
+    
+    content.append(Paragraph('📋 Notas e Frequência', section_title_style))
     
     # Table headers
     grade_data = [
@@ -131,18 +167,13 @@ def generate_bulletin_pdf(student, grades):
         # Calculate absence percentage
         absence_percentage = (grade.absences / grade.subject.workload) * 100 if grade.subject.workload > 0 else 0
         
-        # Determine status with new criteria
+        # Determine status with new criteria - simpler format for PDF
         if final_grade is None:
             status = "Pendente"
         elif final_grade >= 50 and absence_percentage <= 25:
             status = "Aprovado"
         else:
-            reasons = []
-            if final_grade < 50:
-                reasons.append("Nota")
-            if absence_percentage > 25:
-                reasons.append("Faltas")
-            status = f"Reprovado ({', '.join(reasons)})"
+            status = "Reprovado"
         
         grade_data.append([
             grade.subject.name,
@@ -155,27 +186,37 @@ def generate_bulletin_pdf(student, grades):
             status
         ])
     
-    grade_table = Table(grade_data, colWidths=[2.2*inch, 1.2*inch, 0.6*inch, 0.6*inch, 0.6*inch, 0.7*inch, 0.9*inch, 0.8*inch])
-    grade_table.setStyle(TableStyle([
-        # Header style
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#FF0000')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+    grade_table = Table(grade_data, colWidths=[4*cm, 3*cm, 1.5*cm, 1.5*cm, 1.5*cm, 1.8*cm, 2*cm, 2.2*cm])
+    
+    # Apply styles to make it look like the image
+    table_style = [
+        # Header style - clean white background with black text
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F0F0F0')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         
         # Data rows
         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 7),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
         
-        # Alternating row colors
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F8F8F8')]),
-        
-        # Subject and teacher name alignment
-        ('ALIGN', (0, 1), (1, -1), 'LEFT'),
-    ]))
+        # Subject name alignment
+        ('ALIGN', (0, 1), (0, -1), 'LEFT'),
+        ('ALIGN', (1, 1), (1, -1), 'LEFT'),
+    ]
+    
+    # Apply conditional formatting for approved status (green background)
+    for i, row in enumerate(grade_data[1:], 1):
+        if len(row) > 7 and row[7] == "Aprovado":
+            table_style.append(('BACKGROUND', (7, i), (7, i), colors.HexColor('#4CAF50')))
+            table_style.append(('TEXTCOLOR', (7, i), (7, i), colors.white))
+    
+    grade_table.setStyle(TableStyle(table_style))
     
     content.append(grade_table)
     content.append(Spacer(1, 30))
