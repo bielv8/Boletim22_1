@@ -31,6 +31,7 @@
                             <tr>
                                 <th>Código</th>
                                 <th>Nome</th>
+                                <th>Professor</th>
                                 <th>Carga Horária</th>
                                 <th>Ações</th>
                             </tr>
@@ -40,6 +41,7 @@
                             <tr>
                                 <td><strong>{{ subject.code }}</strong></td>
                                 <td>{{ subject.name }}</td>
+                                <td>{{ subject.teacher_name or '-' }}</td>
                                 <td>{{ subject.workload }}h</td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-outline-danger" 

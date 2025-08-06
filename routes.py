@@ -95,6 +95,7 @@ def add_subject():
         subject.name = form.name.data
         subject.code = form.code.data
         subject.workload = form.workload.data
+        subject.teacher_name = form.teacher_name.data
         db.session.add(subject)
         db.session.commit()
         flash('Disciplina adicionada com sucesso!', 'success')
@@ -156,7 +157,7 @@ def add_grade():
         grade.grade_1 = form.grade_1.data
         grade.grade_2 = form.grade_2.data
         grade.grade_3 = form.grade_3.data
-        grade.final_grade = form.final_grade.data
+        grade.final_grade = None  # Will be calculated automatically
         grade.absences = form.absences.data
         db.session.add(grade)
         db.session.commit()
@@ -175,7 +176,7 @@ def edit_grade(id):
         grade.grade_1 = form.grade_1.data
         grade.grade_2 = form.grade_2.data
         grade.grade_3 = form.grade_3.data
-        grade.final_grade = form.final_grade.data
+        grade.final_grade = None  # Will be calculated automatically
         grade.absences = form.absences.data
         db.session.commit()
         flash('Nota atualizada com sucesso!', 'success')
@@ -239,6 +240,7 @@ def create_default_subjects():
             subject.name = subject_data['name']
             subject.code = subject_data['code']
             subject.workload = subject_data['workload']
+            subject.teacher_name = None
             db.session.add(subject)
     
     try:

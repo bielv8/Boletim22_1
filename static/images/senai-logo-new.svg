@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+    <!-- Background rectangle -->
+    <rect width="300" height="80" fill="#FF0000"/>
+    
+    <!-- White horizontal lines pattern (left side) -->
+    <rect x="5" y="10" width="40" height="3" fill="white"/>
+    <rect x="5" y="17" width="35" height="2" fill="white"/>
+    <rect x="5" y="23" width="45" height="2" fill="white"/>
+    <rect x="5" y="29" width="30" height="2" fill="white"/>
+    <rect x="5" y="35" width="50" height="2" fill="white"/>
+    <rect x="5" y="41" width="25" height="2" fill="white"/>
+    <rect x="5" y="47" width="40" height="2" fill="white"/>
+    <rect x="5" y="53" width="35" height="2" fill="white"/>
+    <rect x="5" y="59" width="45" height="2" fill="white"/>
+    <rect x="5" y="65" width="30" height="2" fill="white"/>
+    
+    <!-- White text SENAI -->
+    <text x="150" y="55" 
+          font-family="Arial Black, Arial, sans-serif" 
+          font-size="42" 
+          font-weight="900" 
+          text-anchor="middle" 
+          fill="white"
+          letter-spacing="2px">SENAI</text>
+    
+    <!-- White horizontal lines pattern (right side) -->
+    <rect x="255" y="10" width="40" height="3" fill="white"/>
+    <rect x="260" y="17" width="35" height="2" fill="white"/>
+    <rect x="250" y="23" width="45" height="2" fill="white"/>
+    <rect x="265" y="29" width="30" height="2" fill="white"/>
+    <rect x="245" y="35" width="50" height="2" fill="white"/>
+    <rect x="270" y="41" width="25" height="2" fill="white"/>
+    <rect x="255" y="47" width="40" height="2" fill="white"/>
+    <rect x="260" y="53" width="35" height="2" fill="white"/>
+    <rect x="250" y="59" width="45" height="2" fill="white"/>
+    <rect x="265" y="65" width="30" height="2" fill="white"/>
+</svg>

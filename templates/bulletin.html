@@ -92,7 +92,7 @@
                                 <td class="text-center">{{ "%.1f"|format(grade.grade_1) if grade.grade_1 is not none else '-' }}</td>
                                 <td class="text-center">{{ "%.1f"|format(grade.grade_2) if grade.grade_2 is not none else '-' }}</td>
                                 <td class="text-center">{{ "%.1f"|format(grade.grade_3) if grade.grade_3 is not none else '-' }}</td>
-                                <td class="text-center fw-bold">{{ "%.1f"|format(grade.final_grade) if grade.final_grade is not none else '-' }}</td>
+                                <td class="text-center fw-bold">{{ "%.1f"|format(grade.calculated_final_grade) if grade.calculated_final_grade is not none else '-' }}</td>
                                 <td class="text-center">{{ grade.absences }}</td>
                                 <td class="text-center">
                                     {% if grade.status == 'Aprovado' %}
@@ -119,9 +119,9 @@
                 <div class="mt-4">
                     <h6 class="text-senai">Legenda:</h6>
                     <ul class="list-unstyled small">
-                        <li><i class="fas fa-circle text-success"></i> <strong>Aprovado:</strong> Nota Final ≥ 50 e Faltas ≤ 20</li>
-                        <li><i class="fas fa-circle text-danger"></i> <strong>Reprovado:</strong> Nota Final < 50 ou Faltas > 20</li>
-                        <li><i class="fas fa-circle text-warning"></i> <strong>Pendente:</strong> Aguardando lançamento da nota final</li>
+                        <li><i class="fas fa-circle text-success"></i> <strong>Aprovado:</strong> Nota Final ≥ 50 (média das 3 notas) e Faltas ≤ 25% da carga horária</li>
+                        <li><i class="fas fa-circle text-danger"></i> <strong>Reprovado:</strong> Nota Final < 50 ou Faltas > 25% da carga horária</li>
+                        <li><i class="fas fa-circle text-warning"></i> <strong>Pendente:</strong> Aguardando lançamento das 3 notas</li>
                     </ul>
                 </div>
                 

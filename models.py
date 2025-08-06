@@ -22,6 +22,7 @@ class Subject(db.Model):
     name = db.Column(db.String(100), nullable=False, unique=True)
     code = db.Column(db.String(20), nullable=False, unique=True)
     workload = db.Column(db.Integer, nullable=False, default=60)  # Hours
+    teacher_name = db.Column(db.String(100), nullable=True)  # Professor name
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationship with grades
@@ -51,24 +52,41 @@ class Grade(db.Model):
     __table_args__ = (db.UniqueConstraint('student_id', 'subject_id', name='unique_student_subject'),)
     
     @property
+    def calculated_final_grade(self):
+        """Calculate final grade as average of grade_1, grade_2, grade_3"""
+        grades = [g for g in [self.grade_1, self.grade_2, self.grade_3] if g is not None]
+        if len(grades) == 3:
+            return sum(grades) / 3
+        return None
+    
+    @property
+    def absence_percentage(self):
+        """Calculate absence percentage based on workload"""
+        if self.subject and self.subject.workload > 0:
+            return (self.absences / self.subject.workload) * 100
+        return 0
+    
+    @property
     def is_approved(self):
-        """Check if student is approved (final grade >= 50 and absences <= 20)"""
-        if self.final_grade is None:
+        """Check if student is approved (final grade >= 50 and absences <= 25% of workload)"""
+        final_grade = self.calculated_final_grade
+        if final_grade is None:
             return False
-        return self.final_grade >= 50 and self.absences <= 20
+        return final_grade >= 50 and self.absence_percentage <= 25
     
     @property
     def status(self):
         """Get approval status as string"""
-        if self.final_grade is None:
+        final_grade = self.calculated_final_grade
+        if final_grade is None:
             return "Pendente"
         elif self.is_approved:
             return "Aprovado"
         else:
             reasons = []
-            if self.final_grade < 50:
+            if final_grade < 50:
                 reasons.append("Nota insuficiente")
-            if self.absences > 20:
+            if self.absence_percentage > 25:
                 reasons.append("Excesso de faltas")
             return f"Reprovado ({', '.join(reasons)})"
     

@@ -49,7 +49,7 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.grade_1.label(class="form-label") }}
                             {{ form.grade_1(class="form-control" + (" is-invalid" if form.grade_1.errors else ""), step="0.1", min="0", max="100") }}
                             {% if form.grade_1.errors %}
@@ -59,7 +59,7 @@
                             {% endif %}
                         </div>
                         
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.grade_2.label(class="form-label") }}
                             {{ form.grade_2(class="form-control" + (" is-invalid" if form.grade_2.errors else ""), step="0.1", min="0", max="100") }}
                             {% if form.grade_2.errors %}
@@ -69,7 +69,7 @@
                             {% endif %}
                         </div>
                         
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-3">
                             {{ form.grade_3.label(class="form-label") }}
                             {{ form.grade_3(class="form-control" + (" is-invalid" if form.grade_3.errors else ""), step="0.1", min="0", max="100") }}
                             {% if form.grade_3.errors %}
@@ -77,16 +77,7 @@
                                     {% for error in form.grade_3.errors %}{{ error }}{% endfor %}
                                 </div>
                             {% endif %}
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            {{ form.final_grade.label(class="form-label") }}
-                            {{ form.final_grade(class="form-control" + (" is-invalid" if form.final_grade.errors else ""), step="0.1", min="0", max="100") }}
-                            {% if form.final_grade.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in form.final_grade.errors %}{{ error }}{% endfor %}
-                                </div>
-                            {% endif %}
+                            <div class="form-text">Nota Final = Média das 3 notas</div>
                         </div>
                     </div>
                     
@@ -99,14 +90,14 @@
                                     {% for error in form.absences.errors %}{{ error }}{% endfor %}
                                 </div>
                             {% endif %}
-                            <div class="form-text">Máximo recomendado: 20 faltas</div>
+                            <div class="form-text">Reprovado se > 25% da carga horária</div>
                         </div>
                     </div>
                     
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
                         <strong>Critério de Aprovação:</strong> 
-                        Nota Final ≥ 50 pontos e Faltas ≤ 20
+                        Nota Final ≥ 50 pontos (média das 3 notas) e Faltas ≤ 25% da carga horária
                     </div>
                     
                     <div class="d-flex justify-content-end gap-2">

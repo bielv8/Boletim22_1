@@ -58,6 +58,17 @@
                         </div>
                     </div>
                     
+                    <div class="mb-3">
+                        {{ form.teacher_name.label(class="form-label") }}
+                        {{ form.teacher_name(class="form-control" + (" is-invalid" if form.teacher_name.errors else "")) }}
+                        {% if form.teacher_name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.teacher_name.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Nome do professor que leciona esta disciplina (opcional)</div>
+                    </div>
+                    
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{{ url_for('subjects') }}" class="btn btn-secondary">Cancelar</a>
                         {{ form.submit(class="btn btn-senai") }}

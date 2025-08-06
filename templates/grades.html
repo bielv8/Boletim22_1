@@ -91,7 +91,7 @@
                                 <td>{{ "%.1f"|format(grade.grade_1) if grade.grade_1 is not none else '-' }}</td>
                                 <td>{{ "%.1f"|format(grade.grade_2) if grade.grade_2 is not none else '-' }}</td>
                                 <td>{{ "%.1f"|format(grade.grade_3) if grade.grade_3 is not none else '-' }}</td>
-                                <td>{{ "%.1f"|format(grade.final_grade) if grade.final_grade is not none else '-' }}</td>
+                                <td>{{ "%.1f"|format(grade.calculated_final_grade) if grade.calculated_final_grade is not none else '-' }}</td>
                                 <td>{{ grade.absences }}</td>
                                 <td>
                                     {% if grade.status == 'Aprovado' %}

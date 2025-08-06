@@ -16,6 +16,7 @@ class SubjectForm(FlaskForm):
     name = StringField('Nome da Disciplina', validators=[DataRequired(), Length(min=2, max=100)])
     code = StringField('Código', validators=[DataRequired(), Length(min=1, max=20)])
     workload = IntegerField('Carga Horária (horas)', validators=[DataRequired(), NumberRange(min=1, max=1000)])
+    teacher_name = StringField('Professor', validators=[Optional(), Length(max=100)])
     submit = SubmitField('Salvar')
 
 class GradeForm(FlaskForm):
@@ -24,7 +25,6 @@ class GradeForm(FlaskForm):
     grade_1 = FloatField('Nota 1', validators=[Optional(), NumberRange(min=0, max=100)])
     grade_2 = FloatField('Nota 2', validators=[Optional(), NumberRange(min=0, max=100)])
     grade_3 = FloatField('Nota 3', validators=[Optional(), NumberRange(min=0, max=100)])
-    final_grade = FloatField('Nota Final', validators=[Optional(), NumberRange(min=0, max=100)])
     absences = IntegerField('Faltas', validators=[Optional(), NumberRange(min=0, max=200)], default=0)
     submit = SubmitField('Salvar')
     
