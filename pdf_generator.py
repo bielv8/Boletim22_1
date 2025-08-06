@@ -53,52 +53,84 @@ def generate_bulletin_pdf(student, grades):
     # Build content
     content = []
     
-    # Red header banner like in the image
-    header_style_white = ParagraphStyle(
-        'HeaderWhite',
+    # Professional SENAI header styles
+    logo_style = ParagraphStyle(
+        'LogoStyle',
+        parent=styles['Normal'],
+        fontSize=16,
+        fontName='Helvetica-Bold',
+        textColor=colors.white,
+        alignment=1,  # Center
+        leading=18
+    )
+    
+    center_title_style = ParagraphStyle(
+        'CenterTitleStyle',
         parent=styles['Normal'],
         fontSize=14,
         fontName='Helvetica-Bold',
         textColor=colors.white,
-        alignment=1  # Center
+        alignment=1,  # Center
+        leading=16
     )
     
-    header_style_white_small = ParagraphStyle(
-        'HeaderWhiteSmall',
+    center_subtitle_style = ParagraphStyle(
+        'CenterSubtitleStyle',
         parent=styles['Normal'],
-        fontSize=10,
+        fontSize=11,
         fontName='Helvetica',
         textColor=colors.white,
-        alignment=1  # Center
+        alignment=1,  # Center
+        leading=13
     )
     
-    # Create SENAI logo text with horizontal lines (similar to image)
-    logo_text = Paragraph(
-        '<font size="16"><b>═══ SENAI ═══</b></font><br/>'
-        '<font size="10">Serviço Nacional de Aprendizagem<br/>Industrial</font><br/>'
-        '<font size="14"><b>BOLETIM ESCOLAR</b></font><br/>'
-        '<font size="12">SENAI Morvan Figueiredo</font>',
-        header_style_white
+    date_style = ParagraphStyle(
+        'DateStyle',
+        parent=styles['Normal'],
+        fontSize=14,
+        fontName='Helvetica-Bold',
+        textColor=colors.white,
+        alignment=2,  # Right
+        leading=16
     )
     
-    # Date in top right
-    date_text = Paragraph(
-        f'<font size="12">{datetime.now().strftime("%d/%m/%Y")}</font>',
-        header_style_white
+    # Create three-column layout: Logo | Center Content | Date
+    # Logo with stylized SENAI blocks similar to the image (left)
+    logo_content = Paragraph(
+        '<font size="14"><b>███ SENAI ███</b></font>',
+        logo_style
     )
     
-    # Red header table
-    header_data = [[logo_text, date_text]]
-    header_table = Table(header_data, colWidths=[14*cm, 3*cm])
+    # Center content with proper spacing and hierarchy
+    center_content = Paragraph(
+        '<font size="12"><b>Serviço Nacional de Aprendizagem</b></font><br/>'
+        '<font size="12"><b>Industrial</b></font><br/>'
+        '<br/>'
+        '<font size="18"><b>BOLETIM ESCOLAR</b></font><br/>'
+        '<font size="14"><b>SENAI Morvan Figueiredo</b></font>',
+        center_title_style
+    )
+    
+    # Date (right) - simplified format
+    date_content = Paragraph(
+        f'<font size="16"><b>{datetime.now().strftime("%d/%m/")}</b></font><br/>'
+        f'<font size="16"><b>{datetime.now().strftime("%Y")}</b></font>',
+        date_style
+    )
+    
+    # Create header table with balanced three columns
+    header_data = [[logo_content, center_content, date_content]]
+    header_table = Table(header_data, colWidths=[4.5*cm, 8*cm, 4.5*cm])
     header_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF0000')),
-        ('ALIGN', (0, 0), (0, 0), 'CENTER'),
-        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+        ('ALIGN', (0, 0), (0, 0), 'CENTER'),   # Logo centered in its cell
+        ('ALIGN', (1, 0), (1, 0), 'CENTER'),   # Center content centered
+        ('ALIGN', (2, 0), (2, 0), 'CENTER'),   # Date centered in its cell
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('TOPPADDING', (0, 0), (-1, -1), 15),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
-        ('LEFTPADDING', (0, 0), (-1, -1), 20),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 20),
+        ('TOPPADDING', (0, 0), (-1, -1), 22),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 22),
+        ('LEFTPADDING', (0, 0), (-1, -1), 15),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 15),
     ]))
     
     content.append(header_table)
