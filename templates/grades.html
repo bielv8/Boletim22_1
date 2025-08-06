@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Notas - Sistema de Boletins SENAI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-senai">
+                <i class="fas fa-clipboard-list"></i> Notas
+            </h1>
+            <a href="{{ url_for('add_grade') }}" class="btn btn-senai">
+                <i class="fas fa-plus"></i> Lançar Notas
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-filter"></i> Filtros</h6>
+            </div>
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <select name="student_id" class="form-select">
+                            <option value="">Todos os alunos</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}" {{ 'selected' if student_filter == student.id }}>
+                                {{ student.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="subject_id" class="form-select">
+                            <option value="">Todas as disciplinas</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}" {{ 'selected' if subject_filter == subject.id }}>
+                                {{ subject.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-senai">
+                            <i class="fas fa-search"></i> Filtrar
+                        </button>
+                        <a href="{{ url_for('grades') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Limpar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grades Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-senai text-white">
+                <h5 class="mb-0">Lista de Notas</h5>
+            </div>
+            <div class="card-body">
+                {% if grades %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Disciplina</th>
+                                <th>Nota 1</th>
+                                <th>Nota 2</th>
+                                <th>Nota 3</th>
+                                <th>Nota Final</th>
+                                <th>Faltas</th>
+                                <th>Situação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                            <tr>
+                                <td>{{ grade.student.name }}</td>
+                                <td>{{ grade.subject.name }}</td>
+                                <td>{{ "%.1f"|format(grade.grade_1) if grade.grade_1 is not none else '-' }}</td>
+                                <td>{{ "%.1f"|format(grade.grade_2) if grade.grade_2 is not none else '-' }}</td>
+                                <td>{{ "%.1f"|format(grade.grade_3) if grade.grade_3 is not none else '-' }}</td>
+                                <td>{{ "%.1f"|format(grade.final_grade) if grade.final_grade is not none else '-' }}</td>
+                                <td>{{ grade.absences }}</td>
+                                <td>
+                                    {% if grade.status == 'Aprovado' %}
+                                        <span class="badge bg-success">{{ grade.status }}</span>
+                                    {% elif grade.status == 'Pendente' %}
+                                        <span class="badge bg-warning">{{ grade.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ grade.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('edit_grade', id=grade.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                onclick="confirmDelete('{{ grade.id }}', '{{ grade.student.name }}', '{{ grade.subject.name }}')" title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhuma nota encontrada</h5>
+                    <p class="text-muted">{{ 'Tente filtros diferentes' if student_filter or subject_filter else 'Comece lançando as primeiras notas' }}</p>
+                    {% if not student_filter and not subject_filter %}
+                    <a href="{{ url_for('add_grade') }}" class="btn btn-senai">
+                        <i class="fas fa-plus"></i> Lançar Primeiras Notas
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir as notas de <strong id="studentName"></strong> na disciplina <strong id="subjectName"></strong>?</p>
+                <p class="text-danger"><small>Esta ação não pode ser desfeita.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(gradeId, studentName, subjectName) {
+    document.getElementById('studentName').textContent = studentName;
+    document.getElementById('subjectName').textContent = subjectName;
+    document.getElementById('deleteForm').action = '/grades/' + gradeId + '/delete';
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}

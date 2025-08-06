@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if grade else 'Lançar' }} Notas - Sistema de Boletins SENAI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-senai">
+                <i class="fas fa-edit"></i> {{ 'Editar' if grade else 'Lançar' }} Notas
+            </h1>
+            <a href="{{ url_for('grades') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-senai text-white">
+                <h5 class="mb-0">{{ 'Editar' if grade else 'Lançar' }} Notas</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.student_id.label(class="form-label") }}
+                            {{ form.student_id(class="form-select" + (" is-invalid" if form.student_id.errors else ""), **({'disabled': 'disabled'} if grade else {})) }}
+                            {% if form.student_id.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.student_id.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            {{ form.subject_id.label(class="form-label") }}
+                            {{ form.subject_id(class="form-select" + (" is-invalid" if form.subject_id.errors else ""), **({'disabled': 'disabled'} if grade else {})) }}
+                            {% if form.subject_id.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.subject_id.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            {{ form.grade_1.label(class="form-label") }}
+                            {{ form.grade_1(class="form-control" + (" is-invalid" if form.grade_1.errors else ""), step="0.1", min="0", max="100") }}
+                            {% if form.grade_1.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.grade_1.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            {{ form.grade_2.label(class="form-label") }}
+                            {{ form.grade_2(class="form-control" + (" is-invalid" if form.grade_2.errors else ""), step="0.1", min="0", max="100") }}
+                            {% if form.grade_2.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.grade_2.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            {{ form.grade_3.label(class="form-label") }}
+                            {{ form.grade_3(class="form-control" + (" is-invalid" if form.grade_3.errors else ""), step="0.1", min="0", max="100") }}
+                            {% if form.grade_3.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.grade_3.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            {{ form.final_grade.label(class="form-label") }}
+                            {{ form.final_grade(class="form-control" + (" is-invalid" if form.final_grade.errors else ""), step="0.1", min="0", max="100") }}
+                            {% if form.final_grade.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.final_grade.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.absences.label(class="form-label") }}
+                            {{ form.absences(class="form-control" + (" is-invalid" if form.absences.errors else ""), min="0") }}
+                            {% if form.absences.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.absences.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Máximo recomendado: 20 faltas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Critério de Aprovação:</strong> 
+                        Nota Final ≥ 50 pontos e Faltas ≤ 20
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('grades') }}" class="btn btn-secondary">Cancelar</a>
+                        {{ form.submit(class="btn btn-senai") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

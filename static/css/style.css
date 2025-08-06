@@ -1,0 +1,254 @@
+/* SENAI Colors */
+:root {
+    --senai-red: #FF0000;
+    --senai-dark-red: #CC0000;
+    --senai-light-red: #FF3333;
+    --senai-gray: #F8F9FA;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--senai-gray);
+}
+
+/* SENAI Branding */
+.bg-senai {
+    background-color: var(--senai-red) !important;
+}
+
+.text-senai {
+    color: var(--senai-red) !important;
+}
+
+.btn-senai {
+    background-color: var(--senai-red);
+    border-color: var(--senai-red);
+    color: white;
+}
+
+.btn-senai:hover {
+    background-color: var(--senai-dark-red);
+    border-color: var(--senai-dark-red);
+    color: white;
+}
+
+.btn-outline-senai {
+    color: var(--senai-red);
+    border-color: var(--senai-red);
+}
+
+.btn-outline-senai:hover {
+    background-color: var(--senai-red);
+    border-color: var(--senai-red);
+    color: white;
+}
+
+.table-senai {
+    background-color: var(--senai-red) !important;
+}
+
+/* Navigation */
+.navbar-brand img {
+    filter: brightness(0) invert(1);
+}
+
+.navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    border-bottom: 2px solid var(--senai-red);
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+/* Tables */
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 0, 0, 0.05);
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--senai-red);
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
+}
+
+/* Alerts */
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Statistics Cards */
+.card.bg-primary .card-footer a,
+.card.bg-success .card-footer a,
+.card.bg-warning .card-footer a,
+.card.bg-senai .card-footer a {
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.card.bg-primary .card-footer a:hover,
+.card.bg-success .card-footer a:hover,
+.card.bg-warning .card-footer a:hover,
+.card.bg-senai .card-footer a:hover {
+    opacity: 1;
+}
+
+/* Quick Actions */
+.btn.h-100 {
+    transition: transform 0.2s;
+}
+
+.btn.h-100:hover {
+    transform: translateY(-2px);
+}
+
+/* Badges */
+.badge {
+    font-size: 0.8em;
+}
+
+/* Bulletin Specific */
+.bulletin-header {
+    border: 3px solid var(--senai-red);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+    }
+}
+
+/* Loading states */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Print styles for bulletin */
+@media print {
+    .navbar,
+    .btn,
+    .alert,
+    .card-header,
+    footer {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .text-senai {
+        color: #000 !important;
+    }
+    
+    .bg-senai {
+        background-color: #000 !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Animation for flash messages */
+.alert {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Status indicators */
+.status-approved {
+    border-left: 4px solid #28a745;
+}
+
+.status-failed {
+    border-left: 4px solid #dc3545;
+}
+
+.status-pending {
+    border-left: 4px solid #ffc107;
+}
+
+/* Empty states */
+.empty-state {
+    padding: 3rem 2rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.empty-state i {
+    margin-bottom: 1rem;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Accessibility improvements */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid var(--senai-red);
+    outline-offset: 2px;
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+    .bg-senai {
+        background-color: #000 !important;
+    }
+    
+    .text-senai {
+        color: #000 !important;
+    }
+    
+    .btn-senai {
+        background-color: #000;
+        border-color: #000;
+    }
+}

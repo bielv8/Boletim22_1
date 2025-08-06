@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Boletim - {{ student.name }} - Sistema de Boletins SENAI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-senai">
+                <i class="fas fa-file-alt"></i> Boletim Escolar
+            </h1>
+            <div>
+                <a href="{{ url_for('download_bulletin_pdf', student_id=student.id) }}" class="btn btn-success">
+                    <i class="fas fa-download"></i> Baixar PDF
+                </a>
+                <a href="{{ url_for('students') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulletin -->
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow">
+            <!-- Header -->
+            <div class="card-header bg-senai text-white text-center py-4">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <img src="{{ url_for('static', filename='images/senai-logo.svg') }}" alt="SENAI" height="60">
+                    </div>
+                    <div class="col-md-6">
+                        <h3 class="mb-1">SENAI</h3>
+                        <h5 class="mb-1">Serviço Nacional de Aprendizagem Industrial</h5>
+                        <h4 class="mb-0">BOLETIM ESCOLAR</h4>
+                        <p class="mb-0">SENAI Morvan Figueiredo</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="mb-0">{{ "06/08/2025" }}</h6>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Student Info -->
+            <div class="card-body">
+                <div class="table-responsive mb-4">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td class="fw-bold text-end" style="width: 200px;">Nome do Aluno:</td>
+                            <td>{{ student.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-end">Matrícula:</td>
+                            <td>{{ student.registration_number }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-end">Curso:</td>
+                            <td>{{ student.course }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-end">Data de Emissão:</td>
+                            <td>{{ "06/08/2025" }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Grades -->
+                <h5 class="text-senai mb-3">
+                    <i class="fas fa-clipboard-list"></i> Notas e Frequência
+                </h5>
+                
+                {% if grades %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-senai text-white">
+                            <tr>
+                                <th>Disciplina</th>
+                                <th class="text-center">Nota 1</th>
+                                <th class="text-center">Nota 2</th>
+                                <th class="text-center">Nota 3</th>
+                                <th class="text-center">Nota Final</th>
+                                <th class="text-center">Faltas</th>
+                                <th class="text-center">Situação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                            <tr>
+                                <td class="fw-bold">{{ grade.subject.name }}</td>
+                                <td class="text-center">{{ "%.1f"|format(grade.grade_1) if grade.grade_1 is not none else '-' }}</td>
+                                <td class="text-center">{{ "%.1f"|format(grade.grade_2) if grade.grade_2 is not none else '-' }}</td>
+                                <td class="text-center">{{ "%.1f"|format(grade.grade_3) if grade.grade_3 is not none else '-' }}</td>
+                                <td class="text-center fw-bold">{{ "%.1f"|format(grade.final_grade) if grade.final_grade is not none else '-' }}</td>
+                                <td class="text-center">{{ grade.absences }}</td>
+                                <td class="text-center">
+                                    {% if grade.status == 'Aprovado' %}
+                                        <span class="badge bg-success">{{ grade.status }}</span>
+                                    {% elif grade.status == 'Pendente' %}
+                                        <span class="badge bg-warning">{{ grade.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ grade.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i>
+                    Nenhuma nota foi lançada para este aluno ainda.
+                </div>
+                {% endif %}
+                
+                <!-- Legend -->
+                <div class="mt-4">
+                    <h6 class="text-senai">Legenda:</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-circle text-success"></i> <strong>Aprovado:</strong> Nota Final ≥ 50 e Faltas ≤ 20</li>
+                        <li><i class="fas fa-circle text-danger"></i> <strong>Reprovado:</strong> Nota Final < 50 ou Faltas > 20</li>
+                        <li><i class="fas fa-circle text-warning"></i> <strong>Pendente:</strong> Aguardando lançamento da nota final</li>
+                    </ul>
+                </div>
+                
+                <!-- Signatures -->
+                <div class="row mt-5 pt-4">
+                    <div class="col-md-6 text-center">
+                        <div style="border-top: 1px solid #000; width: 80%; margin: 0 auto; padding-top: 10px;">
+                            <small>Assinatura do Responsável</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <div style="border-top: 1px solid #000; width: 80%; margin: 0 auto; padding-top: 10px;">
+                            <small>Carimbo da Instituição</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
