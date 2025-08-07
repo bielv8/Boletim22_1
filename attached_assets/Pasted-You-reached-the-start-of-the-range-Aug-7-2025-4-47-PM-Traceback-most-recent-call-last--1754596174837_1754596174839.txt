@@ -1,0 +1,97 @@
+You reached the start of the range → Aug 7, 2025, 4:47 PM
+
+Traceback (most recent call last):
+
+  File "/app/main.py", line 1, in <module>
+
+    from app import app
+
+  File "/app/app.py", line 29, in <module>
+
+    db.init_app(app)
+
+  File "/opt/venv/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 355, in init_app
+
+    raise RuntimeError(
+
+RuntimeError: Either 'SQLALCHEMY_DATABASE_URI' or 'SQLALCHEMY_BINDS' must be set.
+
+Traceback (most recent call last):
+
+  File "/app/main.py", line 1, in <module>
+
+    from app import app
+
+  File "/app/app.py", line 29, in <module>
+
+    db.init_app(app)
+
+  File "/opt/venv/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 355, in init_app
+
+    raise RuntimeError(
+
+RuntimeError: Either 'SQLALCHEMY_DATABASE_URI' or 'SQLALCHEMY_BINDS' must be set.
+
+Traceback (most recent call last):
+
+  File "/app/main.py", line 1, in <module>
+
+    from app import app
+
+  File "/app/app.py", line 29, in <module>
+
+    db.init_app(app)
+
+  File "/opt/venv/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 355, in init_app
+
+    raise RuntimeError(
+
+RuntimeError: Either 'SQLALCHEMY_DATABASE_URI' or 'SQLALCHEMY_BINDS' must be set.
+
+Traceback (most recent call last):
+
+  File "/app/main.py", line 1, in <module>
+
+    from app import app
+
+  File "/app/app.py", line 29, in <module>
+
+    db.init_app(app)
+
+  File "/opt/venv/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 355, in init_app
+
+    raise RuntimeError(
+
+RuntimeError: Either 'SQLALCHEMY_DATABASE_URI' or 'SQLALCHEMY_BINDS' must be set.
+
+Traceback (most recent call last):
+
+  File "/app/main.py", line 1, in <module>
+
+    from app import app
+
+  File "/app/app.py", line 29, in <module>
+
+    db.init_app(app)
+
+  File "/opt/venv/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 355, in init_app
+
+    raise RuntimeError(
+
+RuntimeError: Either 'SQLALCHEMY_DATABASE_URI' or 'SQLALCHEMY_BINDS' must be set.
+
+Traceback (most recent call last):
+
+  File "/app/main.py", line 1, in <module>
+
+    from app import app
+
+  File "/app/app.py", line 29, in <module>
+
+    db.init_app(app)
+
+  File "/opt/venv/lib/python3.12/site-packages/flask_sqlalchemy/extension.py", line 355, in init_app
+
+    raise RuntimeError(
+
+RuntimeError: Either 'SQLALCHEMY_DATABASE_URI' or 'SQLALCHEMY_BINDS' must be set.
