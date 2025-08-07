@@ -9,9 +9,14 @@
             <h1 class="text-senai">
                 <i class="fas fa-clipboard-list"></i> Notas
             </h1>
-            <a href="{{ url_for('add_grade') }}" class="btn btn-senai">
-                <i class="fas fa-plus"></i> Lançar Notas
-            </a>
+            <div class="btn-group">
+                <a href="{{ url_for('add_grade') }}" class="btn btn-senai">
+                    <i class="fas fa-plus"></i> Lançar Nota
+                </a>
+                <a href="{{ url_for('add_multiple_grades') }}" class="btn btn-success">
+                    <i class="fas fa-clipboard-check"></i> Lançar Múltiplas
+                </a>
+            </div>
         </div>
     </div>
 </div>

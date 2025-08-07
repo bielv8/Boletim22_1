@@ -34,6 +34,14 @@ class GradeForm(FlaskForm):
         self.student_id.choices = [(s.id, s.name) for s in Student.query.order_by(Student.name).all()]
         self.subject_id.choices = [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
 
+class MultipleGradesForm(FlaskForm):
+    student_id = SelectField('Aluno', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Lançar Notas')
+    
+    def __init__(self, *args, **kwargs):
+        super(MultipleGradesForm, self).__init__(*args, **kwargs)
+        self.student_id.choices = [(s.id, s.name) for s in Student.query.order_by(Student.name).all()]
+
 class ExcelUploadForm(FlaskForm):
     excel_file = FileField('Planilha Excel', validators=[
         FileRequired('Selecione um arquivo'),

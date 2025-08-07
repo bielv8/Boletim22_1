@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Lançar Múltiplas Notas - Sistema de Boletins SENAI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-senai">
+                <i class="fas fa-edit"></i> Lançar Múltiplas Notas
+            </h1>
+            <a href="{{ url_for('grades') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if step == 1 %}
+<!-- Step 1: Select Student -->
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-senai text-white">
+                <h5 class="mb-0">Passo 1: Selecionar Aluno</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <input type="hidden" name="student_selected" value="1">
+                    
+                    <div class="mb-3">
+                        {{ form.student_id.label(class="form-label") }}
+                        {{ form.student_id(class="form-select" + (" is-invalid" if form.student_id.errors else "")) }}
+                        {% if form.student_id.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.student_id.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-senai">
+                            <i class="fas fa-arrow-right"></i> Continuar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- Step 2: Select Subjects and Enter Grades -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-senai text-white">
+                <h5 class="mb-0">Passo 2: Selecionar Matérias e Lançar Notas</h5>
+                <small>Aluno: {{ student.name }} ({{ student.registration_number }})</small>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="gradesForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                    <input type="hidden" name="save_grades" value="1">
+                    
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Instruções:</strong> 
+                        Marque as matérias que deseja lançar notas e preencha os campos. 
+                        Matérias já com notas lançadas aparecerão com os valores atuais.
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Selecionar</th>
+                                    <th>Matéria</th>
+                                    <th>Código</th>
+                                    <th>Professor</th>
+                                    <th>Nota 1</th>
+                                    <th>Nota 2</th>
+                                    <th>Nota 3</th>
+                                    <th>Faltas</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in subjects %}
+                                {% set existing = existing_grades.get(subject.id) %}
+                                <tr id="row_{{ subject.id }}" class="subject-row {% if existing %}table-warning{% endif %}">
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input subject-checkbox" 
+                                                   type="checkbox" 
+                                                   name="selected_subjects" 
+                                                   value="{{ subject.id }}" 
+                                                   id="check_{{ subject.id }}"
+                                                   onchange="toggleGradeInputs({{ subject.id }})">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ subject.name }}</strong>
+                                        <br><small class="text-muted">{{ subject.workload }}h</small>
+                                    </td>
+                                    <td>{{ subject.code }}</td>
+                                    <td>{{ subject.teacher_name or '-' }}</td>
+                                    <td>
+                                        <input type="number" 
+                                               class="form-control form-control-sm grade-input" 
+                                               name="grade_1_{{ subject.id }}" 
+                                               step="0.1" 
+                                               min="0" 
+                                               max="100" 
+                                               value="{{ existing.grade_1 if existing and existing.grade_1 is not none else '' }}"
+                                               disabled>
+                                    </td>
+                                    <td>
+                                        <input type="number" 
+                                               class="form-control form-control-sm grade-input" 
+                                               name="grade_2_{{ subject.id }}" 
+                                               step="0.1" 
+                                               min="0" 
+                                               max="100" 
+                                               value="{{ existing.grade_2 if existing and existing.grade_2 is not none else '' }}"
+                                               disabled>
+                                    </td>
+                                    <td>
+                                        <input type="number" 
+                                               class="form-control form-control-sm grade-input" 
+                                               name="grade_3_{{ subject.id }}" 
+                                               step="0.1" 
+                                               min="0" 
+                                               max="100" 
+                                               value="{{ existing.grade_3 if existing and existing.grade_3 is not none else '' }}"
+                                               disabled>
+                                    </td>
+                                    <td>
+                                        <input type="number" 
+                                               class="form-control form-control-sm grade-input" 
+                                               name="absences_{{ subject.id }}" 
+                                               min="0" 
+                                               max="200" 
+                                               value="{{ existing.absences if existing else 0 }}"
+                                               disabled>
+                                    </td>
+                                    <td>
+                                        {% if existing %}
+                                            {% if existing.calculated_final_grade is not none %}
+                                                {% if existing.is_approved %}
+                                                    <span class="badge bg-success">{{ "%.1f"|format(existing.calculated_final_grade) }}</span>
+                                                    <br><small class="text-success">Aprovado</small>
+                                                {% else %}
+                                                    <span class="badge bg-danger">{{ "%.1f"|format(existing.calculated_final_grade) }}</span>
+                                                    <br><small class="text-danger">{{ existing.status }}</small>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge bg-secondary">-</span>
+                                                <br><small class="text-muted">Pendente</small>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">-</span>
+                                            <br><small class="text-muted">Não lançada</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Critério de Aprovação:</strong> 
+                        Nota Final ≥ 50 pontos (média das 3 notas) e Faltas ≤ 25% da carga horária
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('add_multiple_grades') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-outline-primary me-2" onclick="selectAllSubjects()">
+                                <i class="fas fa-check-double"></i> Selecionar Todas
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="clearAllSubjects()">
+                                <i class="fas fa-times"></i> Limpar Seleção
+                            </button>
+                            <button type="submit" class="btn btn-senai" onclick="return validateForm()">
+                                <i class="fas fa-save"></i> Salvar Notas
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleGradeInputs(subjectId) {
+    const checkbox = document.getElementById(`check_${subjectId}`);
+    const row = document.getElementById(`row_${subjectId}`);
+    const inputs = row.querySelectorAll('.grade-input');
+    
+    inputs.forEach(input => {
+        input.disabled = !checkbox.checked;
+        if (checkbox.checked) {
+            input.classList.add('border-primary');
+        } else {
+            input.classList.remove('border-primary');
+        }
+    });
+    
+    // Highlight row
+    if (checkbox.checked) {
+        row.classList.add('table-primary');
+    } else {
+        row.classList.remove('table-primary');
+    }
+}
+
+function selectAllSubjects() {
+    const checkboxes = document.querySelectorAll('.subject-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        toggleGradeInputs(checkbox.value);
+    });
+}
+
+function clearAllSubjects() {
+    const checkboxes = document.querySelectorAll('.subject-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        toggleGradeInputs(checkbox.value);
+    });
+}
+
+function validateForm() {
+    const selectedCheckboxes = document.querySelectorAll('.subject-checkbox:checked');
+    
+    if (selectedCheckboxes.length === 0) {
+        alert('Por favor, selecione pelo menos uma matéria!');
+        return false;
+    }
+    
+    return confirm(`Confirma o lançamento das notas para ${selectedCheckboxes.length} matéria(s)?`);
+}
+
+// Initialize existing grades as checked
+document.addEventListener('DOMContentLoaded', function() {
+    const existingRows = document.querySelectorAll('.table-warning');
+    existingRows.forEach(row => {
+        const checkbox = row.querySelector('.subject-checkbox');
+        if (checkbox) {
+            checkbox.checked = true;
+            toggleGradeInputs(checkbox.value);
+        }
+    });
+});
+</script>
+
+{% endif %}
+{% endblock %}

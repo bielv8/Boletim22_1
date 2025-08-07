@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, send_file
 from app import app, db
 from models import Student, Subject, Grade
-from forms import StudentForm, SubjectForm, GradeForm, ExcelUploadForm
+from forms import StudentForm, SubjectForm, GradeForm, MultipleGradesForm, ExcelUploadForm
 from pdf_generator import generate_bulletin_pdf
 import pandas as pd
 import os
@@ -167,6 +167,95 @@ def add_grade():
         return redirect(url_for('grades'))
     
     return render_template('add_grade.html', form=form)
+
+@app.route('/grades/add-multiple', methods=['GET', 'POST'])
+def add_multiple_grades():
+    """Add grades for multiple subjects at once"""
+    form = MultipleGradesForm()
+    
+    if request.method == 'POST' and 'student_selected' in request.form:
+        # Student has been selected, show subjects for grading
+        student_id = int(request.form.get('student_id'))
+        student = Student.query.get_or_404(student_id)
+        
+        # Get all subjects
+        subjects = Subject.query.order_by(Subject.name).all()
+        
+        # Get existing grades for this student
+        existing_grades = {g.subject_id: g for g in Grade.query.filter_by(student_id=student_id).all()}
+        
+        return render_template('add_multiple_grades.html', 
+                             form=form, 
+                             student=student,
+                             subjects=subjects,
+                             existing_grades=existing_grades,
+                             step=2)
+    
+    elif request.method == 'POST' and 'save_grades' in request.form:
+        # Save the grades
+        student_id = int(request.form.get('student_id'))
+        selected_subjects = request.form.getlist('selected_subjects')
+        
+        if not selected_subjects:
+            flash('Selecione pelo menos uma matéria!', 'error')
+            return redirect(url_for('add_multiple_grades'))
+        
+        saved_count = 0
+        updated_count = 0
+        
+        for subject_id in selected_subjects:
+            subject_id = int(subject_id)
+            
+            # Get form data for this subject
+            grade_1 = request.form.get(f'grade_1_{subject_id}')
+            grade_2 = request.form.get(f'grade_2_{subject_id}')
+            grade_3 = request.form.get(f'grade_3_{subject_id}')
+            absences = request.form.get(f'absences_{subject_id}')
+            
+            # Convert to proper types
+            grade_1 = float(grade_1) if grade_1 and grade_1.strip() else None
+            grade_2 = float(grade_2) if grade_2 and grade_2.strip() else None
+            grade_3 = float(grade_3) if grade_3 and grade_3.strip() else None
+            absences = int(absences) if absences and absences.strip() else 0
+            
+            # Check if grade already exists
+            existing_grade = Grade.query.filter_by(
+                student_id=student_id,
+                subject_id=subject_id
+            ).first()
+            
+            if existing_grade:
+                # Update existing grade
+                existing_grade.grade_1 = grade_1
+                existing_grade.grade_2 = grade_2
+                existing_grade.grade_3 = grade_3
+                existing_grade.absences = absences
+                updated_count += 1
+            else:
+                # Create new grade
+                new_grade = Grade()
+                new_grade.student_id = student_id
+                new_grade.subject_id = subject_id
+                new_grade.grade_1 = grade_1
+                new_grade.grade_2 = grade_2
+                new_grade.grade_3 = grade_3
+                new_grade.absences = absences
+                db.session.add(new_grade)
+                saved_count += 1
+        
+        db.session.commit()
+        
+        message = []
+        if saved_count > 0:
+            message.append(f'{saved_count} nota(s) adicionada(s)')
+        if updated_count > 0:
+            message.append(f'{updated_count} nota(s) atualizada(s)')
+            
+        flash(f'{" e ".join(message)} com sucesso!', 'success')
+        return redirect(url_for('grades'))
+    
+    # Initial form display
+    return render_template('add_multiple_grades.html', form=form, step=1)
 
 @app.route('/grades/<int:id>/edit', methods=['GET', 'POST'])
 def edit_grade(id):
